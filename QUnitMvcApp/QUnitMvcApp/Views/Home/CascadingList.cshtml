@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "CascadingList";
+}
+@{Html.EnableUnobtrusiveJavaScript(true);}
+<script type="text/javascript">
+    var cityCount = 0;
+    $(document).ready(function () {
+        getCountry();
+        $("#CountriesID").change(function() {
+            getCity($("#CountriesID").val());
+        })
+
+    });
+    function getCountry() {
+        var url = "@Url.Content("~/Home/CountryList")";
+
+ 
+
+        $.getJSON(url, function (data) {
+            var items = "<option>Select a Country</option>";
+            $.each(data, function (i, country) {
+                if (country.Value.indexOf("\'") > -1) {
+                    s = country.Value + " " + country.Text;
+                    alert(s + ": Country.Value cannot contain \'");
+                }
+                items += "<option value='" + country.Value + "'>" + country.Text + "</option>";
+            });
+            $('#CountriesID').html(items);
+        });
+    }
+
+    function getCity(countryId) {
+        var url = '@Url.Content("~/Home/CityList")/' + countryId;
+
+        $.getJSON(url, function (data) {
+            var items = '<option>Select a City</option>';
+            $.each(data, function (i, city) {
+                items += '<option value=' + city.Value + "'>" + city.Text + "</option>";
+                cityCount++;
+            });
+            $('#CitiesID').html(items);
+        });
+    }
+
+    test("Perform Country onchange", function () {
+        $('#CountriesID').trigger("change");
+    alert("Check No. of cities from Australia");
+    equals(cityCount, 3, "The no. of cities should be 3");
+    });
+</script>
+<h2>Country</h2>
+
+ 
+
+<div id="CountriesDivID">
+    <label for="Countries">Countries</label>
+    <select id="CountriesID" name="Countries" onchange="getCity()"></select>
+</div>    
+<div id="CitiesDivID" >
+    <label for="Cities">Cities</label>
+    <select id="CitiesID" name="Cities"></select>
+</div>
+
+<div>
+    <h1 id="qunit-header">QUnit example</h1>
+    <ol id="qunit-tests"></ol>
+</div>
